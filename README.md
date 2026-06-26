@@ -57,6 +57,7 @@ This repository is a public reference pattern for designing a secure AWS landing
 │   ├── account-structure.md
 │   ├── guardrails.md
 │   └── access-model.md
+├── CONTRIBUTING.md
 └── README.md
 ```
 
@@ -68,6 +69,10 @@ This repository is a public reference pattern for designing a secure AWS landing
 - Prefer role-based access with clear permission boundaries
 - Apply security controls consistently across accounts
 - Keep production access limited, approved, and auditable
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidance on safe examples, placeholder values, review expectations, and useful contribution types.
 
 ## Status
 
