@@ -56,10 +56,18 @@ This repository is a public reference pattern for designing a secure AWS landing
 ├── docs/
 │   ├── account-structure.md
 │   ├── guardrails.md
-│   └── access-model.md
+│   ├── access-model.md
+│   └── evidence-collection.md
 ├── CONTRIBUTING.md
 └── README.md
 ```
+
+## Documentation
+
+- [Account structure](docs/account-structure.md)
+- [Access model](docs/access-model.md)
+- [Guardrails](docs/guardrails.md)
+- [Security baseline evidence collection](docs/evidence-collection.md)
 
 ## Design Principles
 
