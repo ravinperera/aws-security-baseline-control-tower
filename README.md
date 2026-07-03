@@ -57,7 +57,8 @@ This repository is a public reference pattern for designing a secure AWS landing
 │   ├── account-structure.md
 │   ├── guardrails.md
 │   ├── access-model.md
-│   └── evidence-collection.md
+│   ├── evidence-collection.md
+│   └── break-glass-drill.md
 ├── CONTRIBUTING.md
 └── README.md
 ```
@@ -68,6 +69,7 @@ This repository is a public reference pattern for designing a secure AWS landing
 - [Access model](docs/access-model.md)
 - [Guardrails](docs/guardrails.md)
 - [Security baseline evidence collection](docs/evidence-collection.md)
+- [Break-glass access drill guide](docs/break-glass-drill.md)
 
 ## Design Principles
 
