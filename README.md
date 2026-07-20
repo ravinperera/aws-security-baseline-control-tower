@@ -82,6 +82,23 @@ This repository is a public reference pattern for designing a secure AWS landing
 - Apply security controls consistently across accounts
 - Keep production access limited, approved, and auditable
 
+## Validate Locally
+
+Terraform 1.6 or later is required. The validation commands do not deploy resources or require AWS credentials.
+
+```bash
+terraform fmt -check -recursive terraform
+
+for directory in terraform/*; do
+  if [ -d "$directory" ]; then
+    terraform -chdir="$directory" init -backend=false -input=false
+    terraform -chdir="$directory" validate
+  fi
+done
+```
+
+Run these checks before opening a pull request. GitHub Actions repeats the same validation for Terraform changes.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidance on safe examples, placeholder values, review expectations, and useful contribution types.
