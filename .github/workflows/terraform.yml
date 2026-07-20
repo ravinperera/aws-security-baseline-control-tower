@@ -1,0 +1,50 @@
+name: Terraform validation
+
+on:
+  pull_request:
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.6"
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive terraform
+
+      - name: Validate examples
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for directory in terraform/*; do
+            if [[ -d "$directory" ]]; then
+              echo "Validating $directory"
+              terraform -chdir="$directory" init -backend=false -input=false
+              terraform -chdir="$directory" validate
+            fi
+          done
