@@ -4,6 +4,18 @@ AWS multi-account security baseline using Control Tower, IAM Identity Center, ce
 
 This repository is a public reference pattern for designing a secure AWS landing zone. It is intentionally generic and does not include real account IDs, client data, internal policies, or company-specific configuration.
 
+## 30-Second Adoption Path
+
+Use the repository in this order:
+
+1. **Define the account layout.** Start with [account structure](docs/account-structure.md) and decide which management, security, log archive, shared-services, and workload accounts your organisation requires.
+2. **Define human access.** Review the [access model](docs/access-model.md), map job roles to IAM Identity Center permission sets, and document break-glass ownership before granting access.
+3. **Establish central logging.** Review the Terraform under `terraform/logging-baseline/` and confirm the destination, retention, encryption, access, and monitoring requirements for CloudTrail and AWS Config data.
+4. **Select baseline controls.** Use the [guardrails guide](docs/guardrails.md) and the examples under `terraform/security-controls/` to choose preventive and detective controls appropriate to each organisational unit and workload tier.
+5. **Validate before adoption.** Replace every placeholder, run the local validation commands below, review the plan in a non-production environment, and retain the evidence listed in [security baseline evidence collection](docs/evidence-collection.md).
+
+This is a reference architecture, not a production-ready landing-zone installer. Account IDs, regions, organisation units, log destinations, retention periods, permission scopes, control selections, and approval processes must be adapted and independently reviewed before deployment.
+
 ## What This Demonstrates
 
 - AWS multi-account structure using Control Tower concepts
