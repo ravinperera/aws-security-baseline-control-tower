@@ -26,6 +26,12 @@ This is a reference architecture, not a production-ready landing-zone installer.
 - Terraform examples for baseline security resources
 - Governance model suitable for regulated SaaS environments
 
+## Architecture
+
+The reference architecture separates organisation governance, central audit storage, security findings, shared services, and workload environments into dedicated accounts. IAM Identity Center provides reviewed workforce access, while CloudTrail, AWS Config, and security findings flow to central accounts with restricted access.
+
+See the [governance baseline architecture diagram](docs/architecture.md) for the account layout, logging flow, access relationships, responsibilities, and scope limitations.
+
 ## Example Account Structure
 
 | Account | Purpose |
@@ -67,6 +73,7 @@ This is a reference architecture, not a production-ready landing-zone installer.
 │       └── variables.tf
 ├── docs/
 │   ├── account-structure.md
+│   ├── architecture.md
 │   ├── guardrails.md
 │   ├── access-model.md
 │   ├── evidence-collection.md
@@ -79,6 +86,7 @@ This is a reference architecture, not a production-ready landing-zone installer.
 ## Documentation
 
 - [Account structure](docs/account-structure.md)
+- [Governance baseline architecture](docs/architecture.md)
 - [Access model](docs/access-model.md)
 - [Guardrails](docs/guardrails.md)
 - [Security baseline evidence collection](docs/evidence-collection.md)
