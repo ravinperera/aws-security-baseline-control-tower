@@ -84,6 +84,7 @@ See the [governance baseline architecture diagram](docs/architecture.md) for the
 ├── scripts/
 │   └── validate_examples.py
 ├── CONTRIBUTING.md
+├── SECURITY.md
 └── README.md
 ```
 
@@ -96,6 +97,7 @@ See the [governance baseline architecture diagram](docs/architecture.md) for the
 - [Security baseline evidence collection](docs/evidence-collection.md)
 - [Break-glass access drill guide](docs/break-glass-drill.md)
 - [Account provisioning checklist](docs/account-provisioning-checklist.md)
+- [Security reporting policy](SECURITY.md)
 
 ## Design Principles
 
@@ -128,7 +130,7 @@ The examples intentionally contain placeholder account IDs, regions, names, rete
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidance on safe examples, placeholder values, review expectations, and useful contribution types.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidance on safe examples, placeholder values, review expectations, and useful contribution types. Report sensitive findings through the private route described in [SECURITY.md](SECURITY.md), not in a public issue.
 
 ## Status
 
