@@ -60,6 +60,8 @@ See the [governance baseline architecture diagram](docs/architecture.md) for the
 
 ```text
 .
+├── .github/workflows/
+│   └── validate.yml
 ├── terraform/
 │   ├── iam-identity-center/
 │   │   ├── permission-sets.tf
@@ -79,6 +81,8 @@ See the [governance baseline architecture diagram](docs/architecture.md) for the
 │   ├── evidence-collection.md
 │   ├── break-glass-drill.md
 │   └── account-provisioning-checklist.md
+├── scripts/
+│   └── validate_examples.py
 ├── CONTRIBUTING.md
 └── README.md
 ```
@@ -104,9 +108,10 @@ See the [governance baseline architecture diagram](docs/architecture.md) for the
 
 ## Validate Locally
 
-Terraform 1.6 or later is required. The validation commands do not deploy resources or require AWS credentials.
+Terraform 1.6 or later is required. These checks do not deploy resources, call AWS APIs, or require AWS credentials.
 
 ```bash
+python3 scripts/validate_examples.py
 terraform fmt -check -recursive terraform
 
 for directory in terraform/*; do
@@ -117,7 +122,9 @@ for directory in terraform/*; do
 done
 ```
 
-Run these checks before opening a pull request. GitHub Actions repeats the same validation for Terraform changes.
+The Python script checks JSON syntax, local Markdown links, and YAML tab indentation. GitHub Actions repeats the repository and Terraform checks in [`.github/workflows/validate.yml`](.github/workflows/validate.yml) using only read access to repository contents.
+
+The examples intentionally contain placeholder account IDs, regions, names, retention values, organisation structures, and policy choices. Successful validation confirms formatting, provider initialisation, configuration structure, and local documentation links. It does not prove that a plan is safe for a particular AWS organisation, that controls meet a specific regulatory framework, or that the examples are production ready. Review a Terraform plan and the resulting security responsibilities independently before adoption.
 
 ## Contributing
 
