@@ -63,6 +63,32 @@ class ValidateExamplesTests(unittest.TestCase):
             ["README.md: link escapes repository: ../outside.md"],
         )
 
+    def test_markdown_ignores_links_inside_backtick_fence(self) -> None:
+        (self.root / "README.md").write_text(
+            "```markdown\n[placeholder](docs/not-real.md)\n```\n",
+            encoding="utf-8",
+        )
+        errors: list[str] = []
+
+        checked = validator.validate_markdown_links(errors)
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(errors, [])
+
+    def test_markdown_ignores_links_inside_tilde_fence_but_checks_outside(self) -> None:
+        (self.root / "README.md").write_text(
+            "~~~markdown\n[placeholder](docs/not-real.md)\n~~~\n[missing](docs/missing.md)\n",
+            encoding="utf-8",
+        )
+        errors: list[str] = []
+
+        validator.validate_markdown_links(errors)
+
+        self.assertEqual(
+            errors,
+            ["README.md: missing local link target: docs/missing.md"],
+        )
+
     def test_invalid_json_is_reported(self) -> None:
         (self.root / "valid.json").write_text(json.dumps({"ok": True}), encoding="utf-8")
         (self.root / "invalid.json").write_text('{"broken": ', encoding="utf-8")

@@ -11,6 +11,7 @@ from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
 REMOTE_PREFIXES = ("http://", "https://", "mailto:", "tel:")
 
 
@@ -40,13 +41,36 @@ def validate_json(errors: list[str]) -> int:
     return checked
 
 
+def strip_fenced_code(text: str) -> str:
+    """Remove fenced code blocks so example links are not treated as real links."""
+    visible: list[str] = []
+    fence_char: str | None = None
+    fence_length = 0
+
+    for line in text.splitlines(keepends=True):
+        match = FENCE.match(line)
+        if match:
+            marker = match.group(1)
+            if fence_char is None:
+                fence_char = marker[0]
+                fence_length = len(marker)
+            elif marker[0] == fence_char and len(marker) >= fence_length:
+                fence_char = None
+                fence_length = 0
+            continue
+        if fence_char is None:
+            visible.append(line)
+
+    return "".join(visible)
+
+
 def validate_markdown_links(errors: list[str]) -> int:
     checked = 0
     for path in sorted(ROOT.rglob("*.md")):
         if ".git" in path.parts or ".terraform" in path.parts:
             continue
         checked += 1
-        text = path.read_text(encoding="utf-8")
+        text = strip_fenced_code(path.read_text(encoding="utf-8"))
         for raw_target in MARKDOWN_LINK.findall(text):
             target = raw_target.strip().split(maxsplit=1)[0].strip("<>")
             if not target or target.startswith("#") or target.startswith(REMOTE_PREFIXES):
