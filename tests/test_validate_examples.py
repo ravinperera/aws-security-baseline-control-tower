@@ -74,6 +74,33 @@ class ValidateExamplesTests(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertTrue(errors[0].startswith("invalid.json: invalid JSON"))
 
+    def test_duplicate_json_key_is_reported(self) -> None:
+        (self.root / "duplicate.json").write_text(
+            '{"enabled": true, "enabled": false}\n',
+            encoding="utf-8",
+        )
+        errors: list[str] = []
+
+        checked = validator.validate_json(errors)
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(
+            errors,
+            ["duplicate.json: invalid JSON (duplicate JSON key: 'enabled')"],
+        )
+
+    def test_nested_json_with_unique_keys_is_accepted(self) -> None:
+        (self.root / "valid.json").write_text(
+            '{"control": {"enabled": true}, "owner": "security"}\n',
+            encoding="utf-8",
+        )
+        errors: list[str] = []
+
+        checked = validator.validate_json(errors)
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(errors, [])
+
     def test_yaml_tab_indentation_is_reported(self) -> None:
         (self.root / "valid.yml").write_text("key:\n  child: value\n", encoding="utf-8")
         (self.root / "invalid.yaml").write_text("key:\n\tchild: value\n", encoding="utf-8")
