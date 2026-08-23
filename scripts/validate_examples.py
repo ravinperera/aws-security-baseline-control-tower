@@ -14,6 +14,16 @@ MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 REMOTE_PREFIXES = ("http://", "https://", "mailto:", "tel:")
 
 
+def reject_duplicate_json_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    """Build a JSON object while rejecting ambiguous duplicate keys."""
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key!r}")
+        result[key] = value
+    return result
+
+
 def validate_json(errors: list[str]) -> int:
     checked = 0
     for path in sorted(ROOT.rglob("*.json")):
@@ -21,8 +31,11 @@ def validate_json(errors: list[str]) -> int:
             continue
         checked += 1
         try:
-            json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            json.loads(
+                path.read_text(encoding="utf-8"),
+                object_pairs_hook=reject_duplicate_json_keys,
+            )
+        except (OSError, UnicodeDecodeError, ValueError) as exc:
             errors.append(f"{path.relative_to(ROOT)}: invalid JSON ({exc})")
     return checked
 
