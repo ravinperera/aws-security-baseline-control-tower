@@ -12,7 +12,11 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
+AWS_ACCOUNT_ID = re.compile(r"(?<!\d)\d{12}(?!\d)")
 REMOTE_PREFIXES = ("http://", "https://", "mailto:", "tel:")
+SAFE_AWS_ACCOUNT_IDS = {"123456789012"}
+PUBLIC_EXAMPLE_SUFFIXES = {".md", ".tf", ".tfvars", ".json", ".yml", ".yaml"}
+PUBLIC_EXAMPLE_PATHS = ("README.md", "CONTRIBUTING.md", "SECURITY.md", "docs", "terraform")
 
 
 def reject_duplicate_json_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -105,11 +109,43 @@ def validate_yaml_indentation(errors: list[str]) -> int:
     return checked
 
 
+def iter_public_example_files() -> list[Path]:
+    """Return the public reference files where account-specific values may appear."""
+    files: set[Path] = set()
+    for relative_path in PUBLIC_EXAMPLE_PATHS:
+        path = ROOT / relative_path
+        if path.is_file() and path.suffix in PUBLIC_EXAMPLE_SUFFIXES:
+            files.add(path)
+        elif path.is_dir():
+            files.update(
+                candidate
+                for candidate in path.rglob("*")
+                if candidate.is_file() and candidate.suffix in PUBLIC_EXAMPLE_SUFFIXES
+            )
+    return sorted(files)
+
+
+def validate_aws_account_ids(errors: list[str]) -> int:
+    """Reject unexpected 12-digit AWS account IDs in public reference examples."""
+    checked = 0
+    for path in iter_public_example_files():
+        checked += 1
+        text = path.read_text(encoding="utf-8")
+        for account_id in sorted(set(AWS_ACCOUNT_ID.findall(text))):
+            if account_id not in SAFE_AWS_ACCOUNT_IDS:
+                errors.append(
+                    f"{path.relative_to(ROOT)}: unexpected AWS account ID {account_id}; "
+                    "use the documented placeholder 123456789012"
+                )
+    return checked
+
+
 def main() -> int:
     errors: list[str] = []
     json_count = validate_json(errors)
     markdown_count = validate_markdown_links(errors)
     yaml_count = validate_yaml_indentation(errors)
+    account_id_count = validate_aws_account_ids(errors)
 
     if errors:
         print("Validation failed:", file=sys.stderr)
@@ -121,7 +157,8 @@ def main() -> int:
         "Validation passed: "
         f"{json_count} JSON file(s), "
         f"{markdown_count} Markdown file(s), "
-        f"{yaml_count} YAML file(s)."
+        f"{yaml_count} YAML file(s), "
+        f"{account_id_count} public example file(s) checked for AWS account IDs."
     )
     return 0
 
