@@ -137,6 +137,40 @@ class ValidateExamplesTests(unittest.TestCase):
         self.assertEqual(checked, 2)
         self.assertEqual(errors, ["invalid.yaml: YAML contains tab indentation"])
 
+    def test_documented_placeholder_account_id_is_allowed(self) -> None:
+        docs = self.root / "docs"
+        docs.mkdir()
+        (docs / "example.md").write_text(
+            "Use the placeholder account 123456789012.\n",
+            encoding="utf-8",
+        )
+        errors: list[str] = []
+
+        checked = validator.validate_aws_account_ids(errors)
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(errors, [])
+
+    def test_unexpected_account_id_is_reported(self) -> None:
+        terraform = self.root / "terraform"
+        terraform.mkdir()
+        (terraform / "example.tf").write_text(
+            'locals { account_id = "210987654321" }\n',
+            encoding="utf-8",
+        )
+        errors: list[str] = []
+
+        checked = validator.validate_aws_account_ids(errors)
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(
+            errors,
+            [
+                "terraform/example.tf: unexpected AWS account ID 210987654321; "
+                "use the documented placeholder 123456789012"
+            ],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -129,7 +129,7 @@ for directory in terraform/*; do
 done
 ```
 
-The Python unit tests exercise the repository validator against temporary fixtures for local links, repository-escape attempts, JSON syntax, and YAML indentation. The validator then checks repository JSON syntax, local Markdown links, and YAML tab indentation. GitHub Actions repeats the tests, repository checks, and Terraform validation in [`.github/workflows/validate.yml`](.github/workflows/validate.yml) using only read access to repository contents.
+The Python unit tests exercise the repository validator against temporary fixtures for local links, repository-escape attempts, JSON syntax, YAML indentation, and AWS account-ID handling. The validator then checks repository JSON syntax, local Markdown links, YAML tab indentation, and public reference files for unexpected 12-digit AWS account IDs while permitting the documented `123456789012` placeholder. GitHub Actions repeats the tests, repository checks, and Terraform validation in [`.github/workflows/validate.yml`](.github/workflows/validate.yml) using only read access to repository contents.
 
 The examples intentionally contain placeholder account IDs, regions, names, retention values, organisation structures, and policy choices. Successful validation confirms formatting, provider initialisation, configuration structure, and local documentation links. It does not prove that a plan is safe for a particular AWS organisation, that controls meet a specific regulatory framework, or that the examples are production ready. Review a Terraform plan and the resulting security responsibilities independently before adoption.
 
