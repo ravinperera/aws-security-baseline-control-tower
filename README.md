@@ -13,6 +13,7 @@ Use the repository in this order:
 3. **Establish central logging.** Review the Terraform under `terraform/logging-baseline/` and confirm the destination, retention, encryption, access, and monitoring requirements for CloudTrail and AWS Config data.
 4. **Select and assign baseline controls.** Use the [guardrails guide](docs/guardrails.md), the [control ownership and evidence matrix](docs/control-ownership-matrix.md), and the examples under `terraform/security-controls/` to choose controls, assign accountable owners, and define evidence before rollout. If a control genuinely cannot be met temporarily, use the [control exception process](docs/control-exceptions.md) rather than silently weakening the baseline.
 5. **Validate before adoption.** Replace every placeholder, run the local validation commands below, review the plan in a non-production environment, and retain the evidence listed in [security baseline evidence collection](docs/evidence-collection.md).
+6. **Review the baseline over time.** Use the [security baseline review cycle](docs/baseline-review-cycle.md) for scheduled reviews and event-driven reassessment after material account, access, logging, control, service, or incident changes.
 
 This is a reference architecture, not a production-ready landing-zone installer. Account IDs, regions, organisation units, log destinations, retention periods, permission scopes, control selections, and approval processes must be adapted and independently reviewed before deployment.
 
@@ -80,6 +81,7 @@ See the [governance baseline architecture diagram](docs/architecture.md) for the
 │   ├── access-model.md
 │   ├── evidence-collection.md
 │   ├── control-ownership-matrix.md
+│   ├── baseline-review-cycle.md
 │   ├── break-glass-drill.md
 │   ├── control-exceptions.md
 │   └── account-provisioning-checklist.md
@@ -100,6 +102,7 @@ See the [governance baseline architecture diagram](docs/architecture.md) for the
 - [Guardrails](docs/guardrails.md)
 - [Control ownership and evidence matrix](docs/control-ownership-matrix.md)
 - [Security baseline evidence collection](docs/evidence-collection.md)
+- [Security baseline review cycle](docs/baseline-review-cycle.md)
 - [Break-glass access drill guide](docs/break-glass-drill.md)
 - [Baseline control exception process](docs/control-exceptions.md)
 - [Account provisioning checklist](docs/account-provisioning-checklist.md)
