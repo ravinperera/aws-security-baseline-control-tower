@@ -11,7 +11,7 @@ Use the repository in this order:
 1. **Define the account layout.** Start with [account structure](docs/account-structure.md) and decide which management, security, log archive, shared-services, and workload accounts your organisation requires.
 2. **Define human access.** Review the [access model](docs/access-model.md), map job roles to IAM Identity Center permission sets, and document break-glass ownership before granting access.
 3. **Establish central logging.** Review the Terraform under `terraform/logging-baseline/` and confirm the destination, retention, encryption, access, and monitoring requirements for CloudTrail and AWS Config data.
-4. **Select baseline controls.** Use the [guardrails guide](docs/guardrails.md) and the examples under `terraform/security-controls/` to choose preventive and detective controls appropriate to each organisational unit and workload tier. If a control genuinely cannot be met temporarily, use the [control exception process](docs/control-exceptions.md) rather than silently weakening the baseline.
+4. **Select and assign baseline controls.** Use the [guardrails guide](docs/guardrails.md), the [control ownership and evidence matrix](docs/control-ownership-matrix.md), and the examples under `terraform/security-controls/` to choose controls, assign accountable owners, and define evidence before rollout. If a control genuinely cannot be met temporarily, use the [control exception process](docs/control-exceptions.md) rather than silently weakening the baseline.
 5. **Validate before adoption.** Replace every placeholder, run the local validation commands below, review the plan in a non-production environment, and retain the evidence listed in [security baseline evidence collection](docs/evidence-collection.md).
 
 This is a reference architecture, not a production-ready landing-zone installer. Account IDs, regions, organisation units, log destinations, retention periods, permission scopes, control selections, and approval processes must be adapted and independently reviewed before deployment.
@@ -79,6 +79,7 @@ See the [governance baseline architecture diagram](docs/architecture.md) for the
 │   ├── guardrails.md
 │   ├── access-model.md
 │   ├── evidence-collection.md
+│   ├── control-ownership-matrix.md
 │   ├── break-glass-drill.md
 │   ├── control-exceptions.md
 │   └── account-provisioning-checklist.md
@@ -97,6 +98,7 @@ See the [governance baseline architecture diagram](docs/architecture.md) for the
 - [Governance baseline architecture](docs/architecture.md)
 - [Access model](docs/access-model.md)
 - [Guardrails](docs/guardrails.md)
+- [Control ownership and evidence matrix](docs/control-ownership-matrix.md)
 - [Security baseline evidence collection](docs/evidence-collection.md)
 - [Break-glass access drill guide](docs/break-glass-drill.md)
 - [Baseline control exception process](docs/control-exceptions.md)
