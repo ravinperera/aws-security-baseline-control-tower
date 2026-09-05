@@ -171,6 +171,39 @@ class ValidateExamplesTests(unittest.TestCase):
             ],
         )
 
+    def test_credential_shape_is_reported_without_echoing_value(self) -> None:
+        docs = self.root / "docs"
+        docs.mkdir()
+        synthetic_key = "AKIA" + ("A" * 16)
+        (docs / "unsafe.md").write_text(
+            f"Example value: {synthetic_key}\n",
+            encoding="utf-8",
+        )
+        errors: list[str] = []
+
+        checked = validator.validate_credential_shapes(errors)
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(
+            errors,
+            ["docs/unsafe.md: contains a value matching the AWS access-key ID pattern"],
+        )
+        self.assertNotIn(synthetic_key, errors[0])
+
+    def test_redacted_credential_placeholders_are_allowed(self) -> None:
+        docs = self.root / "docs"
+        docs.mkdir()
+        (docs / "safe.md").write_text(
+            "Use ghp_<redacted>, sk-<redacted>, and a redacted private-key placeholder.\n",
+            encoding="utf-8",
+        )
+        errors: list[str] = []
+
+        checked = validator.validate_credential_shapes(errors)
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(errors, [])
+
 
 if __name__ == "__main__":
     unittest.main()
