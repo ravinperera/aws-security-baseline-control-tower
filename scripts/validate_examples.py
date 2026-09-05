@@ -17,6 +17,15 @@ REMOTE_PREFIXES = ("http://", "https://", "mailto:", "tel:")
 SAFE_AWS_ACCOUNT_IDS = {"123456789012"}
 PUBLIC_EXAMPLE_SUFFIXES = {".md", ".tf", ".tfvars", ".json", ".yml", ".yaml"}
 PUBLIC_EXAMPLE_PATHS = ("README.md", "CONTRIBUTING.md", "SECURITY.md", "docs", "terraform")
+CREDENTIAL_PATTERNS = (
+    ("AWS access-key ID", re.compile(r"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b")),
+    ("GitHub token", re.compile(r"\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{30,255}\b")),
+    ("OpenAI-style API key", re.compile(r"\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b")),
+    (
+        "PEM private-key header",
+        re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+    ),
+)
 
 
 def reject_duplicate_json_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -110,7 +119,7 @@ def validate_yaml_indentation(errors: list[str]) -> int:
 
 
 def iter_public_example_files() -> list[Path]:
-    """Return the public reference files where account-specific values may appear."""
+    """Return public reference files where account-specific values may appear."""
     files: set[Path] = set()
     for relative_path in PUBLIC_EXAMPLE_PATHS:
         path = ROOT / relative_path
@@ -140,12 +149,27 @@ def validate_aws_account_ids(errors: list[str]) -> int:
     return checked
 
 
+def validate_credential_shapes(errors: list[str]) -> int:
+    """Reject obvious credential shapes without echoing the matched value."""
+    checked = 0
+    for path in iter_public_example_files():
+        checked += 1
+        text = path.read_text(encoding="utf-8")
+        for label, pattern in CREDENTIAL_PATTERNS:
+            if pattern.search(text):
+                errors.append(
+                    f"{path.relative_to(ROOT)}: contains a value matching the {label} pattern"
+                )
+    return checked
+
+
 def main() -> int:
     errors: list[str] = []
     json_count = validate_json(errors)
     markdown_count = validate_markdown_links(errors)
     yaml_count = validate_yaml_indentation(errors)
     account_id_count = validate_aws_account_ids(errors)
+    credential_count = validate_credential_shapes(errors)
 
     if errors:
         print("Validation failed:", file=sys.stderr)
@@ -158,7 +182,8 @@ def main() -> int:
         f"{json_count} JSON file(s), "
         f"{markdown_count} Markdown file(s), "
         f"{yaml_count} YAML file(s), "
-        f"{account_id_count} public example file(s) checked for AWS account IDs."
+        f"{account_id_count} public example file(s) checked for AWS account IDs, and "
+        f"{credential_count} public example file(s) scanned for credential shapes."
     )
     return 0
 
