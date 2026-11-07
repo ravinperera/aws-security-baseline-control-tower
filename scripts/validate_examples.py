@@ -140,12 +140,11 @@ def validate_aws_account_ids(errors: list[str]) -> int:
     for path in iter_public_example_files():
         checked += 1
         text = path.read_text(encoding="utf-8")
-        for account_id in sorted(set(AWS_ACCOUNT_ID.findall(text))):
-            if account_id not in SAFE_AWS_ACCOUNT_IDS:
-                errors.append(
-                    f"{path.relative_to(ROOT)}: unexpected AWS account ID {account_id}; "
-                    "use the documented placeholder 123456789012"
-                )
+        if any(account_id not in SAFE_AWS_ACCOUNT_IDS for account_id in AWS_ACCOUNT_ID.findall(text)):
+            errors.append(
+                f"{path.relative_to(ROOT)}: unexpected AWS account ID; "
+                "use the documented placeholder 123456789012"
+            )
     return checked
 
 
