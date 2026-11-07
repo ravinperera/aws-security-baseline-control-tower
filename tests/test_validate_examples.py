@@ -166,10 +166,34 @@ class ValidateExamplesTests(unittest.TestCase):
         self.assertEqual(
             errors,
             [
-                "terraform/example.tf: unexpected AWS account ID 210987654321; "
+                "terraform/example.tf: unexpected AWS account ID; "
                 "use the documented placeholder 123456789012"
             ],
         )
+
+    def test_multiple_unexpected_account_ids_are_reported_once_without_echoing(self) -> None:
+        docs = self.root / "docs"
+        docs.mkdir()
+        synthetic_ids = ("210987654321", "987654321098")
+        (docs / "example.md").write_text(
+            f"Accounts: {synthetic_ids[0]}, {synthetic_ids[1]}, {synthetic_ids[0]}, "
+            "and safe placeholder 123456789012.\n",
+            encoding="utf-8",
+        )
+        errors: list[str] = []
+
+        checked = validator.validate_aws_account_ids(errors)
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(
+            errors,
+            [
+                "docs/example.md: unexpected AWS account ID; "
+                "use the documented placeholder 123456789012"
+            ],
+        )
+        for account_id in synthetic_ids:
+            self.assertNotIn(account_id, "\n".join(errors))
 
     def test_credential_shape_is_reported_without_echoing_value(self) -> None:
         docs = self.root / "docs"
