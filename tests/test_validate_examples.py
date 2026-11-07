@@ -177,7 +177,7 @@ class ValidateExamplesTests(unittest.TestCase):
         synthetic_ids = ("210987654321", "987654321098")
         (docs / "example.md").write_text(
             f"Accounts: {synthetic_ids[0]}, {synthetic_ids[1]}, {synthetic_ids[0]}, "
-            "and safe placeholder 123456789012.\\n",
+            "and safe placeholder 123456789012.\n",
             encoding="utf-8",
         )
         errors: list[str] = []
@@ -193,7 +193,7 @@ class ValidateExamplesTests(unittest.TestCase):
             ],
         )
         for account_id in synthetic_ids:
-            self.assertNotIn(account_id, "\\n".join(errors))
+            self.assertNotIn(account_id, "\n".join(errors))
 
     def test_credential_shape_is_reported_without_echoing_value(self) -> None:
         docs = self.root / "docs"
