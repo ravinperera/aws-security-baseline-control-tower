@@ -219,7 +219,7 @@ class ValidateExamplesTests(unittest.TestCase):
         docs.mkdir()
         synthetic_token = "github_pat_" + ("A1_" * 27) + "Z"
         (docs / "unsafe.md").write_text(
-            f"Leaked token: {synthetic_token}\\n",
+            f"Leaked token: {synthetic_token}\n",
             encoding="utf-8",
         )
         errors: list[str] = []
@@ -231,7 +231,7 @@ class ValidateExamplesTests(unittest.TestCase):
             errors,
             ["docs/unsafe.md: contains a value matching the GitHub fine-grained personal access token pattern"],
         )
-        self.assertNotIn(synthetic_token, "\\n".join(errors))
+        self.assertNotIn(synthetic_token, "\n".join(errors))
 
     def test_redacted_credential_placeholders_are_allowed(self) -> None:
         docs = self.root / "docs"
