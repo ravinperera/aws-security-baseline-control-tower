@@ -20,6 +20,7 @@ PUBLIC_EXAMPLE_PATHS = ("README.md", "CONTRIBUTING.md", "SECURITY.md", "docs", "
 CREDENTIAL_PATTERNS = (
     ("AWS access-key ID", re.compile(r"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b")),
     ("GitHub token", re.compile(r"\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{30,255}\b")),
+    ("GitHub fine-grained personal access token", re.compile(r"\bgithub_pat_[A-Za-z0-9_]{40,}\b")),
     ("OpenAI-style API key", re.compile(r"\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b")),
     (
         "PEM private-key header",

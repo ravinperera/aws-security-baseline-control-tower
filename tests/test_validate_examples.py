@@ -214,11 +214,30 @@ class ValidateExamplesTests(unittest.TestCase):
         )
         self.assertNotIn(synthetic_key, errors[0])
 
+    def test_github_fine_grained_pat_is_reported_without_disclosing_value(self) -> None:
+        docs = self.root / "docs"
+        docs.mkdir()
+        synthetic_token = "github_pat_" + ("A1_" * 27) + "Z"
+        (docs / "unsafe.md").write_text(
+            f"Leaked token: {synthetic_token}\n",
+            encoding="utf-8",
+        )
+        errors: list[str] = []
+
+        checked = validator.validate_credential_shapes(errors)
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(
+            errors,
+            ["docs/unsafe.md: contains a value matching the GitHub fine-grained personal access token pattern"],
+        )
+        self.assertNotIn(synthetic_token, "\n".join(errors))
+
     def test_redacted_credential_placeholders_are_allowed(self) -> None:
         docs = self.root / "docs"
         docs.mkdir()
         (docs / "safe.md").write_text(
-            "Use ghp_<redacted>, sk-<redacted>, and a redacted private-key placeholder.\n",
+            "Use ghp_<redacted>, github_pat_<redacted>, sk-<redacted>, and a redacted private-key placeholder.\n",
             encoding="utf-8",
         )
         errors: list[str] = []
