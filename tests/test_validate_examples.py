@@ -127,6 +127,30 @@ class ValidateExamplesTests(unittest.TestCase):
         self.assertEqual(checked, 1)
         self.assertEqual(errors, [])
 
+    def test_nonstandard_json_constants_are_rejected(self) -> None:
+        for constant in ("NaN", "Infinity", "-Infinity"):
+            with self.subTest(constant=constant):
+                (self.root / "invalid.json").write_text(
+                    '{"nested": [' + constant + ']}\n', encoding="utf-8"
+                )
+                errors: list[str] = []
+
+                self.assertEqual(validator.validate_json(errors), 1)
+                self.assertEqual(
+                    errors,
+                    [f"invalid.json: invalid JSON (non-standard JSON constant: {constant})"],
+                )
+
+    def test_json_accepts_standard_numbers_and_quoted_constants(self) -> None:
+        (self.root / "valid.json").write_text(
+            '{"numbers": [0, -1, 1.5, 1e3], "labels": ["NaN", "Infinity", "-Infinity"]}\n',
+            encoding="utf-8",
+        )
+        errors: list[str] = []
+
+        self.assertEqual(validator.validate_json(errors), 1)
+        self.assertEqual(errors, [])
+
     def test_yaml_tab_indentation_is_reported(self) -> None:
         (self.root / "valid.yml").write_text("key:\n  child: value\n", encoding="utf-8")
         (self.root / "invalid.yaml").write_text("key:\n\tchild: value\n", encoding="utf-8")

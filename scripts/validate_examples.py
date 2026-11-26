@@ -39,6 +39,11 @@ def reject_duplicate_json_keys(pairs: list[tuple[str, object]]) -> dict[str, obj
     return result
 
 
+def reject_nonstandard_json_constant(value: str) -> object:
+    """Reject non-JSON numeric literals accepted by Python's decoder."""
+    raise ValueError(f"non-standard JSON constant: {value}")
+
+
 def validate_json(errors: list[str]) -> int:
     checked = 0
     for path in sorted(ROOT.rglob("*.json")):
@@ -49,6 +54,7 @@ def validate_json(errors: list[str]) -> int:
             json.loads(
                 path.read_text(encoding="utf-8"),
                 object_pairs_hook=reject_duplicate_json_keys,
+                parse_constant=reject_nonstandard_json_constant,
             )
         except (OSError, UnicodeDecodeError, ValueError) as exc:
             errors.append(f"{path.relative_to(ROOT)}: invalid JSON ({exc})")
